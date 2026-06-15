@@ -21,6 +21,217 @@
 
 ---
 
+## 🎯 Use Cases
+
+Whether you're a student, creator, developer, researcher, or hobbyist — Timelapse Recorder fits naturally into your workflow.
+
+---
+
+### 📚 Study & Productivity
+
+**Document your study sessions**
+
+Set a 1–5s interval and record yourself studying. The timelapse becomes a powerful accountability tool — watch 4 hours of work compressed into 2 minutes. Great for:
+
+- Pomodoro session documentation
+- Revision montages to share with study groups
+- Tracking how long you actually focus vs. get distracted
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | Webcam (top-down or side angle) |
+| Interval | 2–5 seconds |
+| Focus Timer | 25 or 50 minutes (Pomodoro) |
+| Export FPS | 30 fps |
+
+**Tip:** Combine with OBS Virtual Camera to overlay your screen content alongside the webcam feed using a side-by-side OBS scene.
+
+---
+
+### 💻 Coding & Development
+
+**Record your entire coding session** — from blank file to finished feature.
+
+- Show how a complex UI was built step by step
+- Create "build in public" content for Twitter/X, YouTube Shorts, or LinkedIn
+- Review your own workflow to identify time sinks
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | OBS Virtual Camera (screen capture scene) |
+| Interval | 1–3 seconds |
+| Focus Timer | Off (run as long as needed) |
+| Export FPS | 24 fps (cinematic feel) |
+
+**OBS Scene idea:** Add your webcam in the bottom-right corner over your code editor using OBS picture-in-picture, then output via Virtual Camera.
+
+---
+
+### 🎨 Art & Creative Work
+
+**Capture the full creative process** — painting, drawing, sculpting, origami, calligraphy.
+
+- Compress hours of painting into a 2-minute reel
+- Perfect for Instagram Reels and YouTube "process" videos
+- Great for digital art (Photoshop, Procreate on iPad via OBS)
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | USB webcam mounted overhead (top-down rig) or USB capture card |
+| Interval | 0.5–2 seconds |
+| Export FPS | 30–60 fps |
+
+**Hardware tip:** A flexible arm mount + webcam (e.g. Logitech C920) positioned directly above the drawing area gives the cleanest result.
+
+---
+
+### 🛠 DIY, Builds & Projects
+
+**Document builds, repairs, and makeovers** over hours or days:
+
+- Furniture assembly / woodworking projects
+- PC builds and cable management
+- Room makeovers / furniture rearrangement
+- Car repairs and detailing
+- 3D printing progress
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | USB webcam on tripod or clamp mount |
+| Interval | 5–30 seconds (for slow builds) |
+| Focus Timer | Off |
+| Export FPS | 24–30 fps |
+
+**Multi-day recording tip:** Stop and restart a new session each day. Export each day separately, then join them in a video editor.
+
+---
+
+### 🌱 Nature & Science
+
+**Capture slow natural processes** that happen over hours or days:
+
+- Plant growth (seed germination, flowers blooming)
+- Ice melting, water freezing
+- Weather patterns outside a window
+- Fermentation and cooking processes (bread rising, caramelization)
+- Ant farms and terrariums
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | USB webcam on a stable mount |
+| Interval | 30s – 5 min (use custom interval) |
+| Focus Timer | Off |
+| Export FPS | 24 fps |
+
+> ⚠️ For multi-hour nature timelapses, ensure your computer doesn't sleep (disable sleep in power settings) and keep the browser tab in the foreground.
+
+---
+
+### 🏋️ Fitness & Training
+
+**Record your workout sessions or physical progress:**
+
+- Full workout timelapse for form review or content creation
+- Before/after transformation documentation over weeks
+- Gym setup / home workout space
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | Webcam on tripod facing the workout space |
+| Interval | 1–5 seconds |
+| Focus Timer | Match your workout duration |
+| Export FPS | 30 fps |
+
+---
+
+### 🎮 Gaming
+
+**Create timelapse videos of long gaming sessions:**
+
+- Full playthrough summaries for RPGs and strategy games
+- Base-building in survival games (Minecraft, Factorio, Satisfactory)
+- City-builder progression (Cities: Skylines, Planet Coaster)
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | OBS Virtual Camera (Game Capture source) |
+| Interval | 1–5 seconds |
+| Focus Timer | Off |
+| Export FPS | 30–60 fps |
+
+**OBS tip:** Use a **Game Capture** source in OBS for zero-lag, borderless capture of fullscreen games. Start Virtual Camera and select it in Timelapse Recorder.
+
+---
+
+### 🏗 Construction & Real Estate
+
+**Document construction progress or property transformations:**
+
+- Renovation before/after documentation
+- Construction site weekly progress
+- Interior decorating projects
+- Garden landscaping
+
+**Recommended settings:**
+| Setting | Value |
+|---|---|
+| Camera | USB webcam or USB capture card (with DSLR) |
+| Interval | 10–60 seconds |
+| Focus Timer | Off |
+| Export FPS | 24 fps |
+
+---
+
+### 📹 Content Creation
+
+**Ready-made use cases for YouTube, TikTok, Instagram, LinkedIn:**
+
+| Platform | Content Type | Interval | Export FPS |
+|---|---|---|---|
+| YouTube | Long-form process video | 2–5s | 30 fps |
+| YouTube Shorts / TikTok | 60-second reel | 1–2s | 60 fps |
+| Instagram Reels | Art / study aesthetic | 1–3s | 30 fps |
+| LinkedIn | Work session / build in public | 2–5s | 24 fps |
+| Twitter/X | Quick demo / showcase | 1s | 30 fps |
+
+---
+
+### 🔬 Research & Academia
+
+**Scientific and academic documentation:**
+
+- Lab experiment documentation (chemical reactions, specimen observation)
+- Behavioral studies (with appropriate consent)
+- Equipment monitoring
+- Data entry / workflow analysis
+- User study screen recordings (via OBS Virtual Camera → screen capture)
+
+**Privacy note:** All frames are stored locally in IndexedDB — no data is sent anywhere. Suitable for confidential research environments.
+
+---
+
+### ⏰ Interval Guide at a Glance
+
+| Real Duration | Interval | Frames | Export @ 30fps | Result Video |
+|---|---|---|---|---|
+| 30 minutes | 1s | 1,800 | 30 fps | **1 min video** |
+| 1 hour | 2s | 1,800 | 30 fps | **1 min video** |
+| 2 hours | 5s | 1,440 | 30 fps | **48 sec video** |
+| 4 hours | 10s | 1,440 | 30 fps | **48 sec video** |
+| 8 hours | 30s | 960 | 24 fps | **40 sec video** |
+| 24 hours | 60s | 1,440 | 24 fps | **1 min video** |
+
+> **Formula:** `video_seconds = (real_duration_seconds / interval_seconds) / export_fps`
+
+---
+
 ## 🚀 Quick Start
 
 ### Option A — Double-click launcher (Windows, easiest)

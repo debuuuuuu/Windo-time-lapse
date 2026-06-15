@@ -113,6 +113,9 @@ OBS Virtual Camera lets you pipe **any OBS scene** (game capture, screen capture
 
 ### Setup Steps
 
+![OBS Virtual Camera Setup Guide](docs/images/obs-setup.png)
+
+
 #### 1. Configure Your OBS Scene
 
 Open OBS Studio and set up the scene you want to record as a timelapse:
@@ -215,6 +218,8 @@ For multi-hour sessions:
 
 ## 🏗 Architecture
 
+![Architecture Diagram](docs/images/architecture.png)
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                        React UI Layer                         │
@@ -253,6 +258,8 @@ For multi-hour sessions:
 ---
 
 ## 🎞 Export Pipeline
+
+![Export Pipeline Diagram](docs/images/export-pipeline.png)
 
 ```
 IndexedDB Frames (JPEG blobs)

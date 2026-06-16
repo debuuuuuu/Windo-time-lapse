@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         : [
             VitePWA({
               registerType: 'autoUpdate',
-              includeAssets: ['favicon.png'],
+              includeAssets: ['favicon.png', 'favicon.svg', 'icon-192.png', 'icon-512.png', 'og-image.png'],
               devOptions: {
                 enabled: true,
               },
@@ -26,28 +26,29 @@ export default defineConfig(({ mode }) => {
                 name: 'Timelapse Recorder',
                 short_name: 'Timelapse',
                 description:
-                  'Record timelapses from your camera and export MP4 videos in the browser.',
+                  'Record timelapses from any camera and export MP4 videos entirely in your browser. No upload. 100% private.',
                 theme_color: '#000000',
                 background_color: '#000000',
                 display: 'standalone',
                 orientation: 'any',
                 start_url: '/',
                 scope: '/',
+                categories: ['utilities', 'productivity', 'photo'],
                 icons: [
                   {
-                    src: '/favicon.png',
+                    src: '/icon-192.png',
                     sizes: '192x192',
                     type: 'image/png',
                     purpose: 'any',
                   },
                   {
-                    src: '/favicon.png',
+                    src: '/icon-512.png',
                     sizes: '512x512',
                     type: 'image/png',
                     purpose: 'any',
                   },
                   {
-                    src: '/favicon.png',
+                    src: '/icon-512.png',
                     sizes: '512x512',
                     type: 'image/png',
                     purpose: 'maskable',

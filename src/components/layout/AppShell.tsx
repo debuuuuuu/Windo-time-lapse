@@ -1,8 +1,12 @@
 import { LivePreview } from '../camera/LivePreview'
 import { AppHeader } from './AppHeader'
 import { ControlDock } from './ControlDock'
+import { WelcomeOverlay } from './WelcomeOverlay'
+import { useTimelapse } from '../../context/TimelapseProvider'
 
 export function AppShell() {
+  const { requestCameraAccess } = useTimelapse()
+
   return (
     <div className="relative h-dvh w-screen overflow-hidden bg-black">
       <a
@@ -15,6 +19,8 @@ export function AppShell() {
       <LivePreview />
       <AppHeader />
       <ControlDock />
+
+      <WelcomeOverlay onStart={() => void requestCameraAccess()} />
     </div>
   )
 }

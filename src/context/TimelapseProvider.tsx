@@ -16,6 +16,9 @@ import { resolveTimerDisplayMs } from '../utils/timerDisplay'
 import { formatLiveClock } from '../utils/formatLiveClock'
 
 const PREFERRED_INTERVAL_KEY = 'preferredIntervalMs'
+const PREFERRED_FPS_KEY = 'preferredFps'
+const WELCOME_SEEN_KEY = 'timelapse_welcome_seen'
+export const STORAGE_QUOTA_EXCEEDED_EVENT = 'timelapse:storage-quota-exceeded'
 
 interface TimelapseContextValue {
   devices: MediaDeviceInfo[]
@@ -31,6 +34,7 @@ interface TimelapseContextValue {
   wallElapsedMs: number
   session: ReturnType<typeof useTimelapseSession>['session']
   storageStats: StorageStats
+  storageError: string | null
   exportProgress: ReturnType<typeof useExport>['progress']
   exportResult: ReturnType<typeof useExport>['exportResult']
   exportUrl: string | null
@@ -77,14 +81,22 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
     const cached = localStorage.getItem(PREFERRED_INTERVAL_KEY)
     return cached ? Number(cached) : DEFAULT_INTERVAL_MS
   })
-  const [fps, setFps] = useState<FpsOption>(DEFAULT_FPS)
+  const [fps, setFpsState] = useState<FpsOption>(() => {
+    const cached = localStorage.getItem(PREFERRED_FPS_KEY)
+    return (cached ? Number(cached) : DEFAULT_FPS) as FpsOption
+  })
   const [storageStats, setStorageStats] = useState<StorageStats>({
     usedBytes: 0,
     quotaBytes: 0,
     percentage: 0,
   })
+  const [storageError, setStorageError] = useState<string | null>(null)
 
-  const camera = useCamera()
+  const autoStartCamera =
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem(WELCOME_SEEN_KEY) === 'true'
+
+  const camera = useCamera({ autoStart: autoStartCamera })
   const overlaySettings = useTimerOverlaySettings()
   const liveClock = useLiveClock(overlaySettings.clockVisible)
 
@@ -166,6 +178,22 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(PREFERRED_INTERVAL_KEY, ms.toString())
   }, [])
 
+  const setFps = useCallback((f: FpsOption) => {
+    setFpsState(f)
+    localStorage.setItem(PREFERRED_FPS_KEY, f.toString())
+  }, [])
+
+  // Storage quota exceeded: auto-stop recording and notify user
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const msg = (e as CustomEvent<string>).detail ?? 'Storage is full. Recording stopped.'
+      setStorageError(msg)
+      void stopRecordingRef.current()
+    }
+    window.addEventListener(STORAGE_QUOTA_EXCEEDED_EVENT, handler)
+    return () => window.removeEventListener(STORAGE_QUOTA_EXCEEDED_EVENT, handler)
+  }, [])
+
   useEffect(() => {
     void refreshStorageStats()
     void sessionHook.loadLatestSession()
@@ -232,6 +260,7 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
       wallElapsedMs,
       session: sessionHook.session,
       storageStats,
+      storageError,
       exportProgress: exportHook.progress,
       exportResult: exportHook.exportResult,
       exportUrl: exportHook.exportUrl,
@@ -281,9 +310,11 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
       refreshStorageStats,
       sessionHook,
       setIntervalMs,
+      setFps,
       startRecording,
       stopRecording,
       storageStats,
+      storageError,
       triggerExport,
       deleteSession,
       loadSession,

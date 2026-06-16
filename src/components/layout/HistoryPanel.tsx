@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Clock, Film, Trash2, X } from 'lucide-react'
 import { useTimelapse } from '../../context/TimelapseProvider'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { frameStorage } from '../../services/storage/FrameStorageService'
 import type { TimelapseSession } from '../../types/session'
 import { getOriginalDurationMs } from '../../types/session'
 import { formatDuration } from '../../utils/formatDuration'
+import { ConfirmDialog } from '../ui/ConfirmDialog'
 
 interface HistoryPanelProps {
   open: boolean
@@ -15,7 +17,10 @@ export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
   const { session, isRecording, loadSession, deleteSession } = useTimelapse()
   const [sessions, setSessions] = useState<TimelapseSession[]>([])
   const [loading, setLoading] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const panelRef = useRef<HTMLElement>(null)
+
+  useFocusTrap(panelRef, open && pendingDeleteId === null)
 
   useEffect(() => {
     if (!open) return
@@ -39,20 +44,18 @@ export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
     if (!open) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && pendingDeleteId === null) onClose()
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onClose])
+  }, [open, onClose, pendingDeleteId])
 
   useEffect(() => {
     if (open) {
       requestAnimationFrame(() => panelRef.current?.focus())
     }
   }, [open])
-
-  if (!open) return null
 
   const handleSelect = (sessionId: string) => {
     if (isRecording) return
@@ -63,14 +66,38 @@ export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
   const handleDelete = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation()
     if (isRecording) return
-    if (!window.confirm('Delete this session and all its frames?')) return
-    void deleteSession(sessionId).then(() => {
-      setSessions((prev) => prev.filter((s) => s.id !== sessionId))
+    setPendingDeleteId(sessionId)
+  }
+
+  const handleDeleteConfirmed = () => {
+    if (!pendingDeleteId) return
+    const idToDelete = pendingDeleteId
+    setPendingDeleteId(null)
+    void deleteSession(idToDelete).then(() => {
+      setSessions((prev) => prev.filter((s) => s.id !== idToDelete))
     })
   }
 
+  if (!open) return null
+
+  const pendingSession = sessions.find((s) => s.id === pendingDeleteId)
+
   return (
     <>
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title="Delete session?"
+        message={`Delete ${pendingSession?.frameCount ?? 0} frames from ${
+          pendingSession
+            ? new Date(pendingSession.stoppedAt ?? pendingSession.startedAt).toLocaleDateString()
+            : 'this session'
+        }? This cannot be undone.`}
+        confirmLabel="Delete"
+        danger
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setPendingDeleteId(null)}
+      />
+
       <button
         type="button"
         className="history-backdrop"
@@ -160,6 +187,7 @@ function HistoryItem({
         className="history-item-main"
         onClick={onSelect}
         disabled={disabled}
+        aria-current={active ? 'true' : undefined}
       >
         <div className="flex items-center justify-between gap-2 min-w-0">
           <span className="text-xs text-white/50 tabular-nums shrink-0">{dateLabel}</span>
@@ -188,7 +216,7 @@ function HistoryItem({
           className="history-item-delete"
           onClick={onDelete}
           disabled={disabled}
-          aria-label="Delete session"
+          aria-label={`Delete session from ${dateLabel}`}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>

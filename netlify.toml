@@ -1,8 +1,38 @@
 [build]
   command   = "npm run build"
   publish   = "dist"
+  environment = { NODE_VERSION = "20" }
 
+# SPA fallback — must come LAST
 [[redirects]]
   from   = "/*"
   to     = "/index.html"
   status = 200
+
+# ── Security & Cross-Origin Isolation (required for FFmpeg WASM SharedArrayBuffer) ──
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy   = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
+    X-Content-Type-Options       = "nosniff"
+    X-Frame-Options              = "DENY"
+    Referrer-Policy              = "strict-origin-when-cross-origin"
+    Permissions-Policy           = "camera=(self), microphone=()"
+
+# Long-lived cache for hashed assets (JS/CSS bundles)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Service worker — always revalidate
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/workbox-*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

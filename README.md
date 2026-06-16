@@ -234,53 +234,55 @@ Set a 1–5s interval and record yourself studying. The timelapse becomes a powe
 
 ## 🚀 Quick Start
 
-### Option A — Double-click launcher (Windows, easiest)
+### Option A — Launch instantly (Windows, no install)
 
-1. Make sure **Node.js 18+** is installed from [nodejs.org](https://nodejs.org)
+Double-click **`Launch Timelapse.bat`** — opens the hosted app in your browser. No Node.js or terminal required.
+
+Or open directly: [timelapse-recorder.netlify.app](https://timelapse-recorder.netlify.app)
+
+Pin the app: click **Install** in the header, or use **Load unpacked** with **`Build Extension.bat`**.
+
+### Option B — Local development (Windows)
+
+1. Install **Node.js 18+** from [nodejs.org](https://nodejs.org)
 2. Double-click **`Start Timelapse Recorder.bat`**
-3. The server starts, and your browser opens automatically at `http://localhost:5173`
+3. Browser opens at `http://localhost:5173`
 
-> The launcher handles `npm install` on first run automatically.
+> The launcher runs `npm install` on first run automatically.
 
-### Option B — Manual (any OS)
+### Option C — Manual (any OS)
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Start the dev server
 npm run dev
-
-# 3. Open in browser
 # → http://localhost:5173
 ```
 
-> **Why localhost?** Browsers require a secure context (HTTPS or localhost) to access camera devices. The dev server also sets the COOP/COEP headers needed for multi-threaded FFmpeg WASM.
+> **Why localhost?** Browsers require a secure context (HTTPS or localhost) for camera access. The dev server also sets COOP/COEP headers for multi-threaded FFmpeg WASM.
 
 ---
 
 ## 📖 How to Use
 
-### Step 1 — Grant Camera Permission
+### Step 1 — Complete the welcome intro
 
-When you first open the app, your browser will ask for camera access. Click **Allow**.
+On first visit, a 3-step intro explains the workflow. Click **Allow camera & get started** on the last step to grant camera access. You can also press **Escape** or skip — then use **Allow camera** on the preview screen.
 
-> ⚠️ Without permission, no device labels are shown (browsers hide them until you grant access). If you accidentally denied permission, click the 🔒 lock icon in the browser address bar and reset camera permissions.
+> ⚠️ Without permission, device labels stay hidden. If you denied access, reset camera permissions via the 🔒 lock icon in the address bar.
 
-### Step 2 — Select Your Video Source
+### Step 2 — Select your video source
 
-Use the **Camera** dropdown in the Setup panel to pick your input:
+Use the **Camera Source** dropdown in the bottom **Control Dock**:
 
-- `Built-in Webcam` — your laptop/desktop camera
-- `OBS Virtual Camera` — stream any OBS scene into the recorder *(see full guide below)*
-- `USB Capture Card` — HDMI-to-USB adapters show up as regular video devices
-- Any other `videoinput` device detected by the browser
+- Built-in webcam
+- **OBS Virtual Camera** — stream any OBS scene *(see guide below)*
+- USB capture cards and other `videoinput` devices
 
-Your preferred device is remembered across sessions via `localStorage`.
+Your preferred device is saved in `localStorage`.
 
-### Step 3 — Set Capture Interval
+### Step 3 — Set capture interval
 
-Choose how often a frame is captured:
+Choose how often a frame is captured in the **Interval** dropdown:
 
 | Interval | Best For |
 |---|---|
@@ -291,23 +293,22 @@ Choose how often a frame is captured:
 | **30 s** | Very slow change (weather over a day) |
 | **Custom** | Any value from 0.5s to 3600s (1 hour) |
 
-### Step 4 — (Optional) Set a Focus Timer
+### Step 4 — (Optional) Set a focus timer
 
-Enable **Auto-Stop** to automatically end the recording after a fixed wall-clock duration. Useful for unattended capture or Pomodoro-style work sessions.
+Use the **Focus Timer** dropdown (Off / 25 min / 50 min / Custom) to auto-stop recording when time runs out.
 
-### Step 5 — Start Recording
+### Step 5 — Start recording
 
-Click **Start Recording**. A live preview shows your camera feed. Frames are saved silently to IndexedDB in the background.
+Click **Start Recording**. Frames save to IndexedDB in the background. Use **History** in the header to load past sessions.
 
-> 💡 **Tip:** Keep the browser tab visible or foreground to prevent the browser from throttling the capture interval timer.
+> 💡 Keep the browser tab visible to avoid capture interval throttling.
 
-### Step 6 — Stop and Export
+### Step 6 — Stop and export
 
 1. Click **Stop Recording**
-2. Choose your output **FPS** (24 / 30 / 60)
-3. Click **Export Timelapse**
-4. Watch the progress bar — the app will automatically use GPU-accelerated WebCodecs if available, otherwise falls back to FFmpeg WASM
-5. **Download** the generated `.mp4` file
+2. Choose export **FPS** (24 / 30 / 60)
+3. Click **Render Video**
+4. Click **Save MP4** when ready
 
 ---
 
@@ -434,7 +435,8 @@ For multi-hour sessions:
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                        React UI Layer                         │
-│   SetupPanel  │  LivePreview  │  RecordingControls  │ Export  │
+│  AppHeader │ LivePreview │ ControlDock │ WelcomeOverlay       │
+│  HistoryPanel │ ConfirmDialog │ GlassDropdown                 │
 └───────────────┬──────────────────────────────────────────────┘
                 │ React Context (TimelapseProvider)
 ┌───────────────▼──────────────────────────────────────────────┐
@@ -566,22 +568,22 @@ timelaspe 12/
 ├── src/
 │   ├── components/
 │   │   ├── camera/
-│   │   │   └── LivePreview.tsx          # Camera feed + canvas overlay
+│   │   │   └── LivePreview.tsx          # Camera feed + overlays
 │   │   ├── recording/
-│   │   │   ├── SetupPanel.tsx           # Camera + interval selection
-│   │   │   ├── RecordingControls.tsx    # Start/Stop buttons
-│   │   │   ├── RecordingStatus.tsx      # Recording indicator
-│   │   │   ├── FrameCounter.tsx         # Live frame count
 │   │   │   ├── LiveClockDisplay.tsx     # Real-time clock overlay
-│   │   │   └── RecordingTimerOverlay.tsx# Focus timer UI
+│   │   │   └── RecordingTimerOverlay.tsx# Recording timer overlay
 │   │   ├── export/
-│   │   │   ├── ExportPanel.tsx          # Export controls + download
-│   │   │   ├── ExportProgressBar.tsx    # Progress feedback
-│   │   │   └── FpsSelector.tsx          # Output FPS picker
-│   │   ├── storage/
-│   │   │   └── StorageIndicator.tsx     # IndexedDB usage display
-│   │   ├── layout/                      # Page layout components
-│   │   └── ui/                          # Shared form primitives
+│   │   │   └── ExportProgressBar.tsx    # Export progress feedback
+│   │   ├── layout/
+│   │   │   ├── AppShell.tsx             # Root layout
+│   │   │   ├── AppHeader.tsx            # Header, history, install
+│   │   │   ├── ControlDock.tsx          # Settings, record, export
+│   │   │   ├── HistoryPanel.tsx         # Past sessions
+│   │   │   ├── WelcomeOverlay.tsx       # First-run intro
+│   │   │   └── AppErrorBoundary.tsx
+│   │   └── ui/
+│   │       ├── GlassDropdown.tsx
+│   │       └── ConfirmDialog.tsx
 │   ├── hooks/
 │   │   ├── useCamera.ts                 # Device enumeration & stream
 │   │   ├── useTimelapseSession.ts       # Core recording state machine
@@ -591,7 +593,8 @@ timelaspe 12/
 │   │   ├── usePreferredExportBackend.ts # WebCodecs/FFmpeg preference
 │   │   ├── useLiveClock.ts              # Real-time clock tick
 │   │   ├── useRecordingClock.ts         # Elapsed recording time
-│   │   └── useInstallPrompt.ts          # PWA install prompt
+│   │   ├── useInstallPrompt.ts          # PWA install prompt
+│   │   └── useFocusTrap.ts              # Modal keyboard focus trap
 │   ├── services/
 │   │   ├── camera/CameraService.ts      # MediaDevices wrapper
 │   │   ├── capture/FrameCaptureService.ts # setInterval + canvas

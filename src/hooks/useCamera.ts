@@ -3,12 +3,18 @@ import { cameraService } from '../services/camera/CameraService'
 
 const PREFERRED_DEVICE_KEY = 'preferredDeviceId'
 
-export function useCamera() {
+interface UseCameraOptions {
+  /** Request camera on mount (returning users who completed welcome). */
+  autoStart?: boolean
+}
+
+export function useCamera(options: UseCameraOptions = {}) {
+  const { autoStart = false } = options
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [deviceId, setDeviceId] = useState(() => localStorage.getItem(PREFERRED_DEVICE_KEY) ?? '')
   const [permissionError, setPermissionError] = useState<string | null>(null)
-  const [isInitializing, setIsInitializing] = useState(true)
+  const [isInitializing, setIsInitializing] = useState(autoStart)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   const refreshDevices = useCallback(async () => {
@@ -64,7 +70,7 @@ export function useCamera() {
   }, [])
 
   useEffect(() => {
-    void requestCameraAccess()
+    if (autoStart) void requestCameraAccess()
 
     const unsubscribe = cameraService.onDeviceChange(() => {
       void refreshDevices()

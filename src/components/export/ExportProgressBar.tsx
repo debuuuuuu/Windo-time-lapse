@@ -10,9 +10,11 @@ export function ExportProgressBar({ progress }: ExportProgressBarProps) {
       <div
         className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden"
         role="progressbar"
+        aria-label="Export progress"
         aria-valuenow={progress.percent}
         aria-valuemin={0}
         aria-valuemax={100}
+        aria-valuetext={`${progress.percent} percent, ${progress.message}`}
       >
         <div
           className="h-full rounded-full bg-blue-500 motion-safe:transition-all motion-safe:duration-300"

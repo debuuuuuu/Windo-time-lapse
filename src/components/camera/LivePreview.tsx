@@ -60,8 +60,22 @@ export function LivePreview() {
 
       {!stream && !permissionError && isInitializing && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950">
-          <Camera className="w-10 h-10 text-white/40 mb-3 animate-pulse" />
+          <Camera className="w-10 h-10 text-white/40 mb-3 animate-pulse" aria-hidden="true" />
           <span className="text-sm text-white/50">Starting camera…</span>
+        </div>
+      )}
+
+      {!stream && !permissionError && !isInitializing && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950">
+          <Camera className="w-10 h-10 text-white/40 mb-3" aria-hidden="true" />
+          <p className="text-sm text-white/50 mb-4">Camera not connected yet</p>
+          <button
+            type="button"
+            onClick={() => void requestCameraAccess()}
+            className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors"
+          >
+            Allow camera
+          </button>
         </div>
       )}
     </div>

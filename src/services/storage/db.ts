@@ -1,5 +1,7 @@
 const DB_NAME = 'TimelapseRecorderDB'
-const DB_VERSION = 1
+// Version 2: adds 'sessionFrame' composite index that was missing from v1 databases.
+// This upgrades existing v1 DBs that only had the 'sessionId' index on the frames store.
+const DB_VERSION = 2
 export const SESSION_STORE = 'sessions'
 export const FRAME_STORE = 'frames'
 
@@ -13,9 +15,11 @@ export function openDatabase(): Promise<IDBDatabase> {
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result)
 
-      request.onupgradeneeded = () => {
+      request.onupgradeneeded = (event) => {
         const db = request.result
+        const oldVersion = event.oldVersion
 
+        // ── Fresh install (v0 → v2) ──────────────────────────────────────────
         if (!db.objectStoreNames.contains(SESSION_STORE)) {
           db.createObjectStore(SESSION_STORE, { keyPath: 'id' })
         }
@@ -24,6 +28,32 @@ export function openDatabase(): Promise<IDBDatabase> {
           const frameStore = db.createObjectStore(FRAME_STORE, { keyPath: 'id' })
           frameStore.createIndex('sessionId', 'sessionId', { unique: false })
           frameStore.createIndex('sessionFrame', ['sessionId', 'frameIndex'], { unique: true })
+          return
+        }
+
+        // ── Migration: v1 → v2 ───────────────────────────────────────────────
+        // v1 created the FRAME_STORE without the 'sessionFrame' composite index.
+        // We add it here so existing databases can export sessions.
+        if (oldVersion < 2) {
+          const transaction = event.target
+            ? (event.target as IDBOpenDBRequest).transaction
+            : null
+
+          if (transaction) {
+            const frameStore = transaction.objectStore(FRAME_STORE)
+
+            // Only create the index if it's truly missing (guards against future re-runs)
+            if (!frameStore.indexNames.contains('sessionFrame')) {
+              frameStore.createIndex('sessionFrame', ['sessionId', 'frameIndex'], {
+                unique: true,
+              })
+            }
+
+            // Ensure the sessionId index also exists (defensive)
+            if (!frameStore.indexNames.contains('sessionId')) {
+              frameStore.createIndex('sessionId', 'sessionId', { unique: false })
+            }
+          }
         }
       }
     })

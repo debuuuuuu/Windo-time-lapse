@@ -2,16 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Record timelapses from your camera and export MP4 videos in the browser." />
+
+    <!-- ── Primary Meta ── -->
+    <title>Timelapse Recorder</title>
+    <meta name="description" content="Record stunning timelapses from any camera — webcam, OBS Virtual Camera, or USB capture card. Export silky-smooth MP4 videos entirely in your browser. No upload. 100% private." />
+    <meta name="keywords" content="timelapse recorder, browser timelapse, webcam timelapse, OBS virtual camera, MP4 export, WebCodecs, PWA" />
+    <meta name="author" content="Timelapse Recorder" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://timelapse-recorder.netlify.app/" />
+
+    <!-- ── Open Graph (Facebook, LinkedIn, Discord) ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://timelapse-recorder.netlify.app/" />
+    <meta property="og:title" content="Timelapse Recorder — Browser-Based Timelapse Studio" />
+    <meta property="og:description" content="Capture frames from any camera and export MP4 timelapses entirely in-browser. No server. No upload. 100% private. Supports OBS Virtual Camera, WebCodecs GPU export, and offline PWA." />
+    <meta property="og:image" content="https://timelapse-recorder.netlify.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Timelapse Recorder" />
+
+    <!-- ── Twitter / X Card ── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Timelapse Recorder — Browser-Based Timelapse Studio" />
+    <meta name="twitter:description" content="Record timelapses from any camera and export MP4 videos in-browser. No upload, 100% private. Free & open source." />
+    <meta name="twitter:image" content="https://timelapse-recorder.netlify.app/og-image.png" />
+
+    <!-- ── Favicon & PWA Icons ── -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png" />
+
+    <!-- ── PWA / App Install ── -->
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Timelapse" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Timelapse Recorder</title>
+    <meta name="application-name" content="Timelapse Recorder" />
+
+    <!-- ── Cloudflare Web Analytics (privacy-first, no cookies) ── -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "19f1cff493b14c79a82cb2f549d4a5fc"}'></script>
   </head>
   <body>
     <div id="root"></div>

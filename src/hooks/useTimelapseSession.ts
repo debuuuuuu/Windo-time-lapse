@@ -22,6 +22,7 @@ export function useTimelapseSession({
 }: UseTimelapseSessionOptions) {
   const [session, setSession] = useState<TimelapseSession | null>(null)
   const [isRecording, setIsRecording] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
   const [elapsedMs, setElapsedMs] = useState(0)
   const sessionRef = useRef<TimelapseSession | null>(null)
   const recordingStartedAtRef = useRef<number | null>(null)
@@ -60,6 +61,7 @@ export function useTimelapseSession({
     recordingStartedAtRef.current = newSession.startedAt
     syncSession(newSession)
     setIsRecording(true)
+    setIsPaused(false)
     setElapsedMs(0)
 
     frameCaptureService.start(
@@ -97,6 +99,7 @@ export function useTimelapseSession({
   const stopRecording = useCallback(async () => {
     frameCaptureService.stop()
     setIsRecording(false)
+    setIsPaused(false)
     recordingStartedAtRef.current = null
 
     const current = sessionRef.current
@@ -112,6 +115,18 @@ export function useTimelapseSession({
     syncSession(updated)
     await onStorageRefresh()
   }, [onStorageRefresh, syncSession])
+
+  const pauseRecording = useCallback(() => {
+    if (!isRecording || isPaused) return
+    frameCaptureService.pause()
+    setIsPaused(true)
+  }, [isRecording, isPaused])
+
+  const resumeRecording = useCallback(() => {
+    if (!isRecording || !isPaused) return
+    frameCaptureService.resume()
+    setIsPaused(false)
+  }, [isRecording, isPaused])
 
   const clearSession = useCallback(() => {
     syncSession(null)
@@ -165,10 +180,13 @@ export function useTimelapseSession({
   return {
     session,
     isRecording,
+    isPaused,
     elapsedMs,
     frameCount: session?.frameCount ?? 0,
     startRecording,
     stopRecording,
+    pauseRecording,
+    resumeRecording,
     clearSession,
     loadSession,
     loadLatestSession,

@@ -11,6 +11,7 @@ export class FrameCaptureService {
   private timerId: ReturnType<typeof setTimeout> | null = null
   private isRunning = false
   private isProcessing = false
+  private isPaused = false
   private frameIndex = 0
   private lastCaptureTime = 0
   private onFrame: FrameCaptureCallback | null = null
@@ -45,6 +46,7 @@ export class FrameCaptureService {
     this.getClockBurnIn = options.getClockBurnIn
     this.frameIndex = 0
     this.isRunning = true
+    this.isPaused = false
     this.lastCaptureTime = Date.now()
     this.videoElement = video
 
@@ -53,8 +55,24 @@ export class FrameCaptureService {
 
   private videoElement: HTMLVideoElement | null = null
 
+  pause(): void {
+    this.isPaused = true
+    if (this.timerId !== null) {
+      clearTimeout(this.timerId)
+      this.timerId = null
+    }
+  }
+
+  resume(): void {
+    if (!this.isRunning || !this.isPaused) return
+    this.isPaused = false
+    this.lastCaptureTime = Date.now()
+    this.scheduleNextCapture()
+  }
+
   stop(): void {
     this.isRunning = false
+    this.isPaused = false
     if (this.timerId !== null) {
       clearTimeout(this.timerId)
       this.timerId = null
@@ -69,7 +87,7 @@ export class FrameCaptureService {
   }
 
   private scheduleNextCapture(): void {
-    if (!this.isRunning) return
+    if (!this.isRunning || this.isPaused) return
 
     const now = Date.now()
     const elapsed = now - this.lastCaptureTime

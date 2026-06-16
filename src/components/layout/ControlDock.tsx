@@ -4,6 +4,8 @@ import {
   ArrowDownToLine,
   Circle,
   Film,
+  Pause,
+  Play,
   RotateCcw,
   Square,
   Trash2,
@@ -31,6 +33,7 @@ export function ControlDock() {
     deviceId,
     intervalMs,
     isRecording,
+    isPaused,
     frameCount,
     wallElapsedMs,
     fps,
@@ -47,6 +50,8 @@ export function ControlDock() {
     setIntervalMs,
     startRecording,
     stopRecording,
+    pauseRecording,
+    resumeRecording,
     triggerExport,
     resetExport,
     deleteSession,
@@ -163,10 +168,11 @@ export function ControlDock() {
 
   // Announce recording state changes to screen readers
   useEffect(() => {
-    if (isRecording) setLiveStatus('Recording started')
-    else if (liveStatus === 'Recording started') setLiveStatus('Recording stopped')
+    if (isRecording && !isPaused) setLiveStatus('Recording started')
+    else if (isPaused) setLiveStatus('Recording paused')
+    else if (liveStatus.startsWith('Recording')) setLiveStatus('Recording stopped')
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRecording])
+  }, [isRecording, isPaused])
 
   return (
     <>
@@ -410,15 +416,30 @@ export function ControlDock() {
                     Start Recording
                   </button>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => void stopRecording()}
-                    className="dock-btn dock-btn-stop flex-1 py-3 text-sm font-bold"
-                    aria-label="Stop recording"
-                  >
-                    <Square className="w-4 h-4 fill-current" aria-hidden="true" />
-                    Stop Recording
-                  </button>
+                  <div className="flex w-full gap-2">
+                    <button
+                      type="button"
+                      onClick={() => isPaused ? resumeRecording() : pauseRecording()}
+                      className={`dock-btn flex-1 py-3 text-sm font-bold ${
+                        isPaused 
+                          ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30' 
+                          : 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      }`}
+                      aria-label={isPaused ? 'Resume recording' : 'Pause recording'}
+                    >
+                      {isPaused ? <Play className="w-4 h-4 fill-current" aria-hidden="true" /> : <Pause className="w-4 h-4 fill-current" aria-hidden="true" />}
+                      {isPaused ? 'Resume' : 'Pause'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void stopRecording()}
+                      className="dock-btn dock-btn-stop flex-1 py-3 text-sm font-bold"
+                      aria-label="Stop recording"
+                    >
+                      <Square className="w-4 h-4 fill-current" aria-hidden="true" />
+                      Stop
+                    </button>
+                  </div>
                 )}
 
                 {canExport && (
@@ -492,13 +513,22 @@ export function ControlDock() {
                   />
                 </div>
                 <div className="min-h-[20px] mt-2 flex flex-wrap items-center justify-end gap-2 w-full">
-                  {isRecording && (
+                  {isRecording && !isPaused && (
                     <span
                       className="text-[11px] font-bold text-red-400 flex items-center gap-1.5 animate-fade-in"
                       role="status"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-fast" aria-hidden="true" />
                       Recording Active
+                    </span>
+                  )}
+                  {isRecording && isPaused && (
+                    <span
+                      className="text-[11px] font-bold text-amber-400 flex items-center gap-1.5 animate-fade-in"
+                      role="status"
+                    >
+                      <Pause className="w-3 h-3 fill-current" aria-hidden="true" />
+                      Paused
                     </span>
                   )}
 

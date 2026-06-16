@@ -29,6 +29,7 @@ interface TimelapseContextValue {
   permissionError: string | null
   isInitializing: boolean
   isRecording: boolean
+  isPaused: boolean
   frameCount: number
   elapsedMs: number
   wallElapsedMs: number
@@ -67,6 +68,8 @@ interface TimelapseContextValue {
   requestCameraAccess: () => Promise<void>
   startRecording: () => Promise<void>
   stopRecording: () => Promise<void>
+  pauseRecording: () => void
+  resumeRecording: () => void
   triggerExport: () => Promise<void>
   resetExport: () => void
   deleteSession: (sessionId?: string) => Promise<void>
@@ -255,6 +258,7 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
       permissionError: camera.permissionError,
       isInitializing: camera.isInitializing,
       isRecording: sessionHook.isRecording,
+      isPaused: sessionHook.isPaused,
       frameCount: sessionHook.frameCount,
       elapsedMs: sessionHook.elapsedMs,
       wallElapsedMs,
@@ -293,6 +297,8 @@ export function TimelapseProvider({ children }: { children: React.ReactNode }) {
       requestCameraAccess: camera.requestCameraAccess,
       startRecording,
       stopRecording,
+      pauseRecording: sessionHook.pauseRecording,
+      resumeRecording: sessionHook.resumeRecording,
       triggerExport,
       resetExport: exportHook.resetExport,
       deleteSession,

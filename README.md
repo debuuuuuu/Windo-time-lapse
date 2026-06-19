@@ -2,6 +2,11 @@
 
 > **Browser-based timelapse studio** — capture frames from any camera source (webcam, OBS Virtual Camera, USB capture card) and export silky-smooth MP4 videos entirely in-browser. No server. No upload. 100% private.
 
+**🔗 Live App → [timelapse-recorder.netlify.app](https://timelapse-recorder.netlify.app)**
+
+> Try it now — no install, no sign-up. Works in Chrome, Edge, and Brave.  
+> 💬 **Feedback welcome** — open an [Issue](../../issues) or reach out on LinkedIn. I'm actively improving this.
+
 ---
 
 ## ✨ Features at a Glance

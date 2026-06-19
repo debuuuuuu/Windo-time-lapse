@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Download, History, Timer } from 'lucide-react'
+import { Download, History, Timer, User, ExternalLink, X } from 'lucide-react'
 import { useTimelapse } from '../../context/TimelapseProvider'
 import { useInstallPrompt } from '../../hooks/useInstallPrompt'
 import { formatDuration } from '../../utils/formatDuration'
 import { HistoryPanel } from './HistoryPanel'
+
+const PORTFOLIO_URL = 'https://debuuuuu-potfolio.vercel.app/'
 
 /** Animated countdown ring progress indicator */
 function CountdownRing({
@@ -53,6 +55,73 @@ function CountdownRing({
   )
 }
 
+/** About me modal */
+function AboutModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+      onClick={onClose}
+    >
+      <div
+        className="support-modal-panel"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="about-title"
+      >
+        {/* Close */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="support-close-btn"
+          aria-label="Close"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Avatar */}
+        <div className="support-avatar" aria-hidden="true">
+          <User className="w-6 h-6 text-white/70" />
+        </div>
+
+        <h2 id="about-title" className="support-title">
+          Hey, I'm Debu 👋
+        </h2>
+
+        <p className="support-body">
+          I'm a developer who builds things that scratch my own itch. This app
+          started because I couldn't find a timelapse tool that was free,
+          offline, and didn't need an account — so I built one.
+        </p>
+
+        <p className="support-body">
+          I'm planning to keep building — scheduled recording, motion-triggered
+          capture, and a proper <strong>Chrome Web Store extension</strong> are
+          next. It's an ongoing project, not a one-time upload.
+        </p>
+
+        {/* Divider */}
+        <div className="support-divider" aria-hidden="true" />
+
+        {/* Portfolio link */}
+        <div className="support-footer-links">
+          <a
+            href={PORTFOLIO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="support-link-btn support-link-btn-primary"
+          >
+            <User className="w-3.5 h-3.5" />
+            See my other work
+            <ExternalLink className="w-3 h-3 opacity-60" />
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function AppHeader() {
   const {
     isRecording,
@@ -64,6 +133,7 @@ export function AppHeader() {
   } = useTimelapse()
   const { canInstall, install } = useInstallPrompt()
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [supportOpen, setSupportOpen] = useState(false)
   const [showFocusInHeader, setShowFocusInHeader] = useState(() => {
     return localStorage.getItem('showFocusInHeader') !== 'false'
   })
@@ -122,7 +192,7 @@ export function AppHeader() {
             History
           </button>
 
-          {/* Focus timer toggle (only shows when timer is enabled and not recording, or always via settings) */}
+          {/* Focus timer toggle */}
           {isFocusTimerEnabled && !isRecording && (
             <button
               type="button"
@@ -135,6 +205,18 @@ export function AppHeader() {
               {showFocusInHeader ? 'Countdown on' : 'Countdown off'}
             </button>
           )}
+
+          {/* ── About me / Support modal trigger ── */}
+          <button
+            type="button"
+            id="support-btn"
+            onClick={() => setSupportOpen(true)}
+            className="glass-chip history-btn"
+            aria-label="About me"
+          >
+            <User className="w-3.5 h-3.5" aria-hidden="true" />
+            About me
+          </button>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto flex-wrap justify-end">
@@ -173,6 +255,9 @@ export function AppHeader() {
       </header>
 
       <HistoryPanel open={historyOpen} onClose={() => setHistoryOpen(false)} />
+
+      {/* Support modal */}
+      {supportOpen && <AboutModal onClose={() => setSupportOpen(false)} />}
     </>
   )
 }
